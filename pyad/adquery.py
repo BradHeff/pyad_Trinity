@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from .adbase import *
 from . import pyadutils
 
+
 class ADQuery(ADBase):
     # Requests secure authentication. When this flag is set,
     # Active Directory will use Kerberos, and possibly NTLM,
@@ -29,16 +30,15 @@ class ADQuery(ADBase):
     def __init__(self, options={}):
         self.__adodb_conn = win32com.client.Dispatch("ADODB.Connection")
         if self.default_username and self.default_password:
-            self.__adodb_conn.Provider = u"ADsDSOObject"
+            self.__adodb_conn.Provider = "ADsDSOObject"
             self.__adodb_conn.Properties("User ID").Value = self.default_username
             self.__adodb_conn.Properties("Password").Value = self.default_password
-            adsi_flag = ADQuery.ADS_SECURE_AUTHENTICATION | \
-                            ADQuery.ADS_USE_ENCRYPTION
+            adsi_flag = ADQuery.ADS_SECURE_AUTHENTICATION | ADQuery.ADS_USE_ENCRYPTION
             self.__adodb_conn.Properties("ADSI Flag").Value = adsi_flag
             self.__adodb_conn.Properties("Encrypt Password").Value = True
-            self.__adodb_conn.Open("Provider=ADSDSOObject")
+            self.__adodb_conn.Open("")
         else:
-            self.__adodb_conn.Open()
+            self.__adodb_conn.Open("Provider=ADSDSOObject")
 
         self.reset()
 
@@ -46,20 +46,30 @@ class ADQuery(ADBase):
         self.__rs = self.__rc = None
         self.__queried = False
 
-    def execute_query(self, attributes=["distinguishedName"], where_clause=None,
-                    type="LDAP", base_dn=None, page_size=1000,
-                    search_scope="subtree", options={}):
+    def execute_query(
+        self,
+        attributes=["distinguishedName"],
+        where_clause=None,
+        type="LDAP",
+        base_dn=None,
+        page_size=1000,
+        search_scope="subtree",
+        options={},
+    ):
         assert type in ("LDAP", "GC")
         if not base_dn:
             if type == "LDAP":
                 base_dn = self._safe_default_domain
             if type == "GC":
                 base_dn = self._safe_default_forest
-        query = "SELECT %s FROM '%s'" % (','.join(attributes),
-                pyadutils.generate_ads_path(base_dn, type,
-                        self.default_ldap_server, self.default_ldap_port))
+        query = "SELECT %s FROM '%s'" % (
+            ",".join(attributes),
+            pyadutils.generate_ads_path(
+                base_dn, type, self.default_ldap_server, self.default_ldap_port
+            ),
+        )
         if where_clause:
-            query = ' '.join((query, 'WHERE', where_clause))
+            query = " ".join((query, "WHERE", where_clause))
 
         command = win32com.client.Dispatch("ADODB.Command")
         command.ActiveConnection = self.__adodb_conn
@@ -71,8 +81,10 @@ class ADQuery(ADBase):
         elif search_scope == "base":
             command.Properties("Searchscope").Value = ADQuery.ADS_SCOPE_BASE
         else:
-            raise Exception("Unknown search_base %s, must be subtree, "\
-                            "onelevel or base" % search_scope)
+            raise Exception(
+                "Unknown search_base %s, must be subtree, "
+                "onelevel or base" % search_scope
+            )
 
         command.CommandText = query
         self.__rs, self.__rc = command.Execute()
