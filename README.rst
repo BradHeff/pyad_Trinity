@@ -1,7 +1,7 @@
 Introduction
 ============
 
-pyad_Trinity is a Python library designed to provide a simple, Pythonic interface to Active Directory through ADSI on the Windows platform. Complete documentation can be found at http://BradHeff.github.io/pyad/. Code is maintained at https://github.com/zakird/pyad_Trinity. The library can be downloaded from PyPI at https://pypi.python.org/pypi/pyad.
+pyad_Trinity is a Python library designed to provide a simple, Pythonic interface to Active Directory through ADSI on the Windows platform. Complete documentation can be found at http://zakird.github.io/pyad/. Code is maintained at https://github.com/BradHeff/pyad_Trinity. The library can be downloaded from PyPI at https://pypi.python.org/pypi/pyad.
 
 
 Requirements
