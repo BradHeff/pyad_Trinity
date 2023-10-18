@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name="pyad_Trinity",
-    version="0.5.16",
+    version="0.5.19",
     author="Zakir Durumeric",
     author_email="zakird@gmail.com",
     maintainer="Zakir Durumeric",
